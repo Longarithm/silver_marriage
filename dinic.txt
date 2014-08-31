@@ -1,0 +1,64 @@
+int n, m, q[MAXN], d[MAXN], pos[MAXN];
+int cnt, tmr, used[MAXN];
+int answer;
+int c[MAXM], f[MAXM], id[MAXM];
+vector<vi> graph(MAXN);
+
+void add_edge(int v, int w, int flow) {
+    graph[v].push_back(cnt);
+    id[cnt] = w;
+    c[cnt] = flow;
+    f[cnt] = 0;
+    cnt++;
+    graph[w].push_back(cnt);
+    id[cnt] = v;
+    c[cnt] = 0;
+    f[cnt] = 0;
+    cnt++;
+}
+
+bool bfs(int from, int to, int x) {
+    int cl = 0, cr = 0, cv, w;
+
+    forn(i, 2 * n + 2)
+        d[i] = -1;
+    d[from] = 0;
+    q[cr++] = from;    
+    while (cl < cr) {
+        cv = q[cl++];
+        forn(i, graph[cv].size()) {
+            w = graph[cv][i];
+            if (d[id[w]] == -1 && c[w] - f[w] >= x) {
+                d[id[w]] = d[cv] + 1;
+                q[cr++] = id[w];
+            }
+        }
+    }
+    
+    return (d[to] != -1);
+}
+
+bool dfs(int v, int x) {
+    if (v == 0)
+        tmr++;
+    if (v == 2 * n + 1) 
+        return 1;
+    if (used[v] == tmr) 
+        return 0;
+
+    used[v] = tmr;
+    int w;
+    FORN(i, pos[v], graph[v].size()) {
+        w = graph[v][i];
+        if (used[id[w]] != tmr && d[v] + 1 == d[id[w]] && c[w] - f[w] >= x) {
+            if (dfs(id[w], x)) {
+                f[w] += x;
+                f[w ^ 1] -= x;
+                return 1;
+            } else {
+                pos[v]++;
+            }
+        }
+    }
+    return 0;
+}

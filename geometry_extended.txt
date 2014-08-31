@@ -1,0 +1,33 @@
+double polygon_area(vector<pt> a) {
+	double ans = 0;
+	for (unsigned int i = 1; i < a.size(); i++)
+		ans += (a[i - 1] % a[i]) / 2;
+	ans += (a.back() % a[0]) / 2;
+	return fabs(ans);
+}
+
+vector<pt> convex(vector<pt> a) {
+	sort(all(a), compare_pt);
+	vector<pt> r, up, down;
+	up.push_back(a[0]);
+	down.push_back(a[0]);
+
+	for (int i = 1; i < a.size(); i++) {
+		if (i == a.size() - 1 || cw(a[0], a[i], a.back())) {
+			while (up.size() >= 2 && !cw(up[up.size() - 2], up.back(), a[i]))
+				up.pop_back();
+			up.push_back(a[i]);
+		}
+		if (i == a.size() - 1 || ccw(a[0], a[i], a.back())) {
+			while (down.size() >= 2 && !ccw(down[down.size() - 2], down.back(), a[i]))
+				down.pop_back();
+			down.push_back(a[i]);
+		}
+	}
+
+	forn(i, up.size())
+		r.push_back(up[i]);
+	FORD(i, down.size() - 2, 1)
+		r.push_back(down[i]);
+	return r;
+}

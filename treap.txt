@@ -1,0 +1,99 @@
+struct node {
+    int key, pr, cnt;
+    node *l, *r;
+    node(int _key){
+        key = _key;
+		pr = rand();
+        cnt = 1;
+        l = r = NULL;
+    }
+};
+
+int cnt(node *p) {
+    return p ? p->cnt : 0;
+}
+
+void upd_cnt (node *&p) {
+    if (p)
+        p->cnt = 1 + cnt(p->l) + cnt(p->r);
+}
+
+void split(node *p, int key, node *&l, node *&r) {
+    if (p == NULL) {
+        l = r = NULL;
+        return;
+    }
+
+    if (key <= p->key) {
+        split(p->l, key, l, p->l);
+        r = p;
+    } else {
+        split(p->r, key, p->r, r);
+        l = p;
+    }
+    upd_cnt(p);
+}
+
+void merge(node *&p, node *l, node *r) {
+    if (l == NULL)
+        p = r;
+    else if (r == NULL)
+        p = l;
+    else if (l->pr < r->pr) {
+        p = l;
+        merge(l->r, l->r, r);
+    } else {
+        p = r;
+        merge(r->l, l, r->l);
+    }
+    upd_cnt(p);
+}
+
+void insert(int key, int pr, node *&p) {
+    if (p == NULL) {
+        p = new node(key);
+		p->pr = pr;
+        return;
+    }
+    if (pr > p->pr) {
+        if (key > p->key)
+            insert(key, pr, p->r);
+        else
+            insert(key, pr, p->l);
+    } else {
+        node *t = new node(key);
+		t->pr = pr;
+        split(p, key, t->l, t->r);
+        p = t;
+    }
+    upd_cnt(p);
+}
+
+void erase(int key, node *&p) {
+    if (p == NULL)
+        return;
+	if (p->key == key)
+		merge (p, p->l, p->r);
+	else {
+	    if (key < p->key)
+            erase(key, p->l);
+        else
+            erase(key, p->r);
+	}
+	upd_cnt(p);
+}
+
+int find(int key, node *p) {
+    if (p == NULL)
+        return -1;
+    if (key < p->key)
+        return find(key, p->l);
+    else {
+        if (key == p->key)
+            return key;
+        else
+            return find(key, p->r);
+    }
+}
+
+node *t; //root
