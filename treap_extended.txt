@@ -60,7 +60,7 @@ void print(node *v) {
 }
 
 void insert(node *&p, int value, int pr, int key) {
-    node *p1, *p2;
+	node *p1, *p2;
 	split(p, key, p1, p2);
 	node *item = new node(value);
 	merge(p, p1, item);
@@ -68,32 +68,33 @@ void insert(node *&p, int value, int pr, int key) {
 }
 
 void erase(node *&p, int key) {
-    if (p == NULL)
-        return;
+	if (p == NULL)
+        	return;
+        	
 	int cur_key = cnt(p -> l);
 	if (cur_key == key)
 		merge(p, p -> l, p -> r);
 	else {
-	    if (key < cur_key)
-            erase(p -> l, key);
+		if (key < cur_key)
+        	erase(p -> l, key);
         else
-			erase(p -> r, key - cnt(p -> l) - 1);
+		erase(p -> r, key - cnt(p -> l) - 1);
 	}
 	upd_cnt(p);
 }
 
 int find(node *p, int key) {
-    if (p == NULL)
-        return -1;
+	if (p == NULL)
+	        return -1;
 	int cur_key = cnt(p -> l);
-    if (key == cur_key)
-        return p -> key;
-    else {
-        if (key < cur_key)
-            return find(p -> l, key);
-        else
-            return find(p -> r, key - cnt(p -> l) - 1);
-    }
+	if (key == cur_key)
+		return p -> key;
+	else {
+		if (key < cur_key)
+	        	return find(p -> l, key);
+		else
+	        	return find(p -> r, key - cnt(p -> l) - 1);
+	}
 }
 
 node *t; //root
