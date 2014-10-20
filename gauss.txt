@@ -11,7 +11,7 @@ void gauss() {
 	forn(i, n) {
 		cid[i] = -1;
 		forn(j, n)
-			if (!was[j] && abs(a[j][i]) != 0 && (cid[i] == -1 || abs(a[j][i]) > abs(a[cid[i]][i])))
+			if (!was[j] && fabs(a[j][i]) >= eps && (cid[i] == -1 || abs(a[j][i]) > abs(a[cid[i]][i])))
 				cid[i] = j;
 
 		if (cid[i] == -1)
@@ -22,7 +22,7 @@ void gauss() {
 		forn(j, n + 1)
 			a[cid[i]][j] /= cf;
 		forn(j, n) {
-			if (j == cid[i] || abs(a[j][i]) == 0)
+			if (j == cid[i] || fabs(a[j][i]) < eps)
 				continue;
 
 			cf = -a[j][i];
