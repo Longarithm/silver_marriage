@@ -3,7 +3,7 @@ struct node {
     node *l, *r;
     node(int _key){
         key = _key;
-		pr = rand();
+	pr = rand();
         cnt = 1;
         l = r = NULL;
     }
@@ -49,50 +49,50 @@ void merge(node *&p, node *l, node *r) {
     upd_cnt(p);
 }
 
-void insert(int key, int pr, node *&p) {
+void insert(node *&p, int key, int pr) {
     if (p == NULL) {
         p = new node(key);
-		p->pr = pr;
+	p->pr = pr;
         return;
     }
     if (pr > p->pr) {
         if (key > p->key)
-            insert(key, pr, p->r);
+            insert(p->r, key, pr);
         else
-            insert(key, pr, p->l);
+            insert(p->l, key, pr);
     } else {
         node *t = new node(key);
-		t->pr = pr;
+	t->pr = pr;
         split(p, key, t->l, t->r);
         p = t;
     }
     upd_cnt(p);
 }
 
-void erase(int key, node *&p) {
+void erase(node *&p, int key) {
     if (p == NULL)
         return;
-	if (p->key == key)
-		merge (p, p->l, p->r);
-	else {
-	    if (key < p->key)
-            erase(key, p->l);
+    if (p->key == key)
+        merge (p, p->l, p->r);
+    else {
+        if (key < p->key)
+            erase(p->l, key);
         else
-            erase(key, p->r);
-	}
-	upd_cnt(p);
+            erase(p->r, key);
+    }
+    upd_cnt(p);
 }
 
-int find(int key, node *p) {
+int find(node *p, int key) {
     if (p == NULL)
         return -1;
     if (key < p->key)
-        return find(key, p->l);
+        return find(p->l, key);
     else {
         if (key == p->key)
             return key;
         else
-            return find(key, p->r);
+            return find(p->r, key);
     }
 }
 
