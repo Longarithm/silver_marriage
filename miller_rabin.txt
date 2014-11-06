@@ -31,42 +31,42 @@ inline bool miller_rabin(ll n) {
 	ll t, t1, temp, s, st;
 	int k, prime;
 
-    t = n - 1;
-    s = 0;
-    while ((t & 1) == 0) {
-        t >>= 1;
-        s++;
+	t = n - 1;
+	s = 0;
+	while ((t & 1) == 0) {
+		t >>= 1;
+		s++;
 	}
 
-    for (int j = 0; j < P; j++) {
+	for (int j = 0; j < P; j++) {
 		prime = 0;
-        temp = 1;
+		temp = 1;
 
-        st = a[j] % n;
-        t1 = t;
+		st = a[j] % n;
+		t1 = t;
 
-        while (t1 > 0) {
-            if (t1 & 1)
+		while (t1 > 0) {
+			if (t1 & 1)
 				temp = binmul(temp, st, n);
-            st = binmul(st, st, n);
-            t1 >>= 1;
+			st = binmul(st, st, n);
+			t1 >>= 1;
 		}
 
-        if ((n + temp - 1) % n == 0)
-            prime = 1;
+		if ((n + temp - 1) % n == 0)
+			prime = 1;
 
-        k = 1;
+		k = 1;
 
-        while ((temp != 1) && (k <= s) && !prime) {
-            if ((temp + 1) % n == 0)
-                prime = 1;
-            k++;
-            temp = binmul(temp, temp, n);
+		while ((temp != 1) && (k <= s) && !prime) {
+			if ((temp + 1) % n == 0)
+				prime = 1;
+			k++;
+			temp = binmul(temp, temp, n);
 		}
 
-        if (!prime)
-            return 0;
+		if (!prime)
+			return 0;
 	}
 
-    return 1;
+	return 1;
 }

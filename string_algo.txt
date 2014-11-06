@@ -1,7 +1,9 @@
 string s;
 int len;
-	cin >> s;
-	len = s.size();
+cin >> s;
+len = s.size();
+
+...
 
 //prefix-function
 

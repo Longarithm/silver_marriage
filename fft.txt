@@ -1,5 +1,5 @@
 const int MAXK = 18;
-const int MAXN = 1 << MAXK;                   
+const int MAXN = 1 << MAXK;				   
 
 struct comp {
 	ld x, y;
@@ -21,7 +21,7 @@ struct comp {
 	void operator+=(comp a) {
 		x += a.x;
 		y += a.y;	
-	}    	
+	}		
 	void operator/=(ld k) {
 		x /= k;
 		y /= k;	
@@ -71,7 +71,7 @@ void fft(polynom &a, bool invert) {
 				
 				w = w * wn;
 			}
-		}    
+		}	
 	}
 	
 	if (invert)

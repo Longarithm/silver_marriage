@@ -1,15 +1,15 @@
 int fir[MAXN], nxt[MAXM], id[MAXM], z[MAXM];
 
-void addedge(int a, int b, int w) {
+void addEdge(int a, int b, int w) {
 	id[c] = b;
 	z[c] = w;
 	nxt[c] = fir[a];
 	fir[a] = c++;
 }
 
-void get(int v) {
+void getAll(int v) {
 	for (int i = fir[v]; i >= 0; i = nxt[i]) {
-        to = id[i];
+		to = id[i];
 		//do something
 	}
 }

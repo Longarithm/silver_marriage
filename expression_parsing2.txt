@@ -1,5 +1,5 @@
 enum {NUM, NOT, OR, AND, BR1, BR2};
-                                                        
+
 bool isOperation(int t) {
 	t = abs(t);
 	return t == NOT || t == OR || t == AND;
@@ -44,7 +44,7 @@ void processOp(int t) {
 	
 	op.pop_back();
 }
-         
+		 
 vector<pair<int, char> > elem;
 int reg[MAXN];
 
@@ -79,7 +79,7 @@ int calc() {
 			
 		} else {
 			
-			st.push_back(reg[elem[i].Y]);                            
+			st.push_back(reg[elem[i].Y]);							
 			may_unary = false;
 			
 		}
@@ -88,7 +88,7 @@ int calc() {
 	while (!op.empty()) 
 		processOp(op.back());
 	return st.back();
-}                 
+}				 
 
 void parse(string s) {
 	int n = s.size();
