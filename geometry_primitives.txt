@@ -16,8 +16,12 @@ pt read_pt() {
 	return pt(a, b);
 }
 
-inline bool compare_pt(pt a, pt b) {
-	return (a.x < b.x) || (a.x == b.x) && (a.y < b.y);
+bool operator==(pt a, pt b) {
+	return a.x == b.x && a.y == b.y;
+}
+
+inline bool operator<(pt a, pt b) {
+	return (a.x < b.x) || ((a.x == b.x) && (a.y < b.y));
 }
 
 pt operator-(pt p1, pt p2) {
@@ -26,6 +30,10 @@ pt operator-(pt p1, pt p2) {
 
 pt operator+(pt p1, pt p2) {
 	return pt(p1.x + p2.x, p1.y + p2.y);
+}
+
+ld len(pt a) {
+	return sqrt(.0 + sqr(a.x) + sqr(a.y));
 }
 
 ld dist(pt p1, pt p2) {
@@ -50,7 +58,7 @@ ld polar_corner(pt p1) {
 	return (res < 0) ? res + 2 * pi : res;
 }
 
-pt rotate(pt a, long ld w) {
+pt rotate(pt a, ld w) {
 	return pt(a.x * cos(w) - a.y * sin(w), a.x * sin(w) + a.y * cos(w));
 }
 
