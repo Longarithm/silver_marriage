@@ -1,3 +1,6 @@
+File Assotiation of *.cpp:
+g++ !.cpp -o !.exe -O2 -DLOCAL -Wall -Wextra -Dsome -std=c++11 -static-libstdc++ -D DEBUG
+
 //my set with blackjack
 struct a
 {
