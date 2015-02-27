@@ -26,32 +26,15 @@ a.resize(n);
 //enlarge your stack
 #pragma comment(linker, "/STACK:16777216")
 
-//треугольник Паскаля
-f[0][0] = 1;
+//binomials
+C[0][0] = 1;
 FORN(i, 1, n) {
-    f[i][0] = 1;
+    C[i][0] = 1;
     FORN(j, 1, i)
-        f[i][j] = f[i - 1][j - 1] + f[i - 1][j];
+        C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
 }
 
-//сжатие координат
-vector<int> num, assoc;
-
-void compress() {
-    sort(all(num));
-    assoc.push_back(num[0]);
-    for (int i = 1; i < num.size(); i++)
-        if (num[i - 1] != num[i])
-            assoc.push_back(num[i]);
-}
-
-<...>
-
-    compress();
-    for (int i = 0; i < num.size(); i++)
-        cout << lower_bound(all(assoc), num[i]) - assoc.begin() << endl;
-
-//цифровая сортировка
+//digit sort
 int a[MAXN], b[MAXN], cnt[base];
 int n, *curr = &a[0], *prev = &b[0];
 int64 divby;
