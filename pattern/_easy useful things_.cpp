@@ -1,5 +1,10 @@
-File Assotiation of *.cpp:
-g++ !.cpp -o !.exe -O2 -DLOCAL -Wall -Wextra -Dsome -std=c++11 -static-libstdc++ -D DEBUG
+File Association of *.cpp:
+g++ !.cpp -o !.exe -O2 -DLOCAL -Wall -Wextra -Wl,--stack=268435456 -Dsome -std=c++11 -static-libstdc++ -D DEBUG
+
+Large Primes
+999999929
+999999797
+999999761
 
 //my set with blackjack
 struct a

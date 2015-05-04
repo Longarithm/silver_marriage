@@ -8,6 +8,6 @@ ll rsq(int rx) {
 }
 
 void add(int rx, ll k) {
-	for (int a = rx; a <= MAXN; a += a & -a)
+	for (int a = rx; a < MAXN; a += a & -a)
 		f[a] += k;
 }
