@@ -11,19 +11,19 @@ struct lnum {
 		a.push_back(x);
 	};
 
-	lnum read() {
+	void read() {
 		char s[MAXN];
-		scanf("%s", &s);
+		scanf("%s", s);
 		int len = strlen(s);
 
 		a.clear();
-		for(int i = len; i > 0; i -= 9) {
+		for (int i = len; i > 0; i -= 9) {
 			s[i] = 0;
 			a.push_back(atoi(i >= 9 ? s + i - 9 : s));
 		}
 	}
 
-	void write() {
+	void print() {
 		int len = a.size() - 1;
 		printf("%d", a.empty() ? 0 : a.back());
 		ford(i, len)
@@ -34,8 +34,8 @@ struct lnum {
 	void operator+=(lnum b) {
 		int rest = 0, len = max(a.size(), b.a.size());
 		for (int i = 0; i < len || rest; i++) {
-			if (a.size() <= i) a.push_back(0);
-			a[i] += (i < b.a.size() ? b.a[i] : 0) + rest;
+			if ((int)a.size() <= i) a.push_back(0);
+			a[i] += (i < (int)b.a.size() ? b.a[i] : 0) + rest;
 			rest = a[i] >= base;
 			if (rest) a[i] -= base;
 		}
@@ -43,8 +43,8 @@ struct lnum {
 
 	void operator-=(lnum b) {
 		int rest = 0;
-		for (int i = 0; i < b.a.size() || rest; i++) {
-			a[i] -= (i < b.a.size() ? b.a[i] : 0) + rest;
+		for (int i = 0; i < (int)b.a.size() || rest; i++) {
+			a[i] -= (i < (int)b.a.size() ? b.a[i] : 0) + rest;
 			rest = a[i] < 0;
 			if (rest) a[i] += base;
 		}
