@@ -2,24 +2,65 @@ const int base = (int)1E9;
 
 struct lnum {
 	vector<int> a;
-
+	bool sign;
+	
 	lnum() {
 		a.clear();
 		a.push_back(0);
+		sign = 1;
 	};
 	lnum(int x) {
 		a.clear();
-		a.push_back(x);
+		a.push_back(abs(x));
+		sign = (x >= 0);
 	};
 	lnum(vector<int> _a) {
 		a = _a;
+		sign = 1;
 	};
+	
+	bool operator==(lnum b) {
+		return a == b.a && (sign == b.sign || (a.size() == 1 && a[0] == 0));	
+	}
+	
+	bool operator<(lnum b) {
+		if (!sign && b.sign && !(*this == b))
+			return 1;
+		if (sign && !b.sign)
+			return 0;
+		if (!sign && !b.sign) {
+			lnum a1 = *this;
+			lnum a2 = b;
+			a1.sign ^= 1;
+			a2.sign ^= 1;
+			return a2 < a1;	
+		}
+				
+		if (a.size() != b.a.size())
+			return a.size() < b.a.size();
+		
+		for (int i = (int)a.size() - 1; i >= 0; i--)
+			if (a[i] != b.a[i])
+				return a[i] < b.a[i];	
+		return 0;
+	}
+	
+	bool operator<=(lnum b) {
+		lnum a1 = *this;
+		return (a1 < b) || (a1 == b);
+	}
 	
 	void read() {
 		string buf;
 		char s[MAXN];
+		sign = 1;
 		
 		cin >> buf;
+		if (buf[0] == '-') {
+			sign = 0;
+			buf = buf.substr(1, buf.size() - 1);
+		}
+		
 		strcpy(s, buf.c_str());
 		int len = strlen(s);
 
@@ -31,16 +72,34 @@ struct lnum {
 	}
 
 	void print() {
+		if (!sign)
+			cout << '-';
 		int len = a.size() - 1;
 		printf("%d", a.empty() ? 0 : a.back());
 		for (int i = len - 1; i >= 0; i--)
 			printf("%09d", a[i]);
-		printf("\n");
+		cout << endl;
 	}
 
 	lnum operator+(lnum b) {
+		lnum a1 = *this;
+		lnum a2 = b;
+		a1.sign = 1;
+		a2.sign = 1;
+		if (a1 < a2)
+			return b + *this;
+			
 		lnum res;
 		res.a.clear();
+		
+		if (sign ^ b.sign) {
+			res = a1 - a2;
+			res.sign = sign;
+			return res;
+		}
+		
+		res.sign = sign;		
+			
 		int rest = 0, len = max(a.size(), b.a.size());
 		for (int i = 0; i < len || rest; i++) {
 			res.a.push_back(0);
@@ -52,22 +111,27 @@ struct lnum {
 		return res;
 	}
 	
-	bool operator==(lnum b) {
-		return a == b.a;	
-	}
-	
-	bool operator<(lnum b) {
-		if (a.size() != b.a.size())
-			return a.size() < b.a.size();
-		
-		for (int i = (int)a.size() - 1; i >= 0; i--)
-			if (a[i] != b.a[i])
-				return a[i] < b.a[i];	
-		return 0;
-	}
-	
 	lnum operator-(lnum b) {
 		lnum res(a);
+		
+		lnum a1 = *this;
+		lnum a2 = b;
+		a1.sign = 1;
+		a2.sign = 1;
+		
+		if (a1 < a2) {
+			res = b - *this;
+			res.sign ^= 1;
+			return res;
+		}
+			
+		if (sign ^ b.sign) {
+			res = a1 + a2;
+			res.sign = sign;
+			return res;
+		}
+		
+		res.sign = sign;		
 		
 		int rest = 0;
 		for (int i = 0; i < (int)b.a.size() || rest; i++) {
@@ -94,6 +158,9 @@ struct lnum {
 			}
 		while (res.a.size() > 1 && res.a.back() == 0)
 			res.a.pop_back();
+			
+		res.sign = (sign == b.sign);
+		
 		return res;
 	}
 	
@@ -110,12 +177,22 @@ struct lnum {
 		
 		while (res.a.size() > 1 && res.a.back() == 0)
 			res.a.pop_back();
+			
+		res.sign = sign ^ (b >= 0);
+		
 		return res;
 	} 
 	
 	lnum operator/(lnum b) {
+		//!!!!!!!!!!
+		assert(sign);
+		assert(b.sign);
+		//!!!!!!!!!!
 		lnum res, curVal, cur;
+		
 		res.a.resize(a.size(), 0);
+		res.sign = 1;
+		
 		for (int i = (int)a.size() - 1; i >= 0; i--) {
 			curVal.a.pb(0);
 			for (int j = (int)curVal.a.size() - 1; j > 0; j--)
@@ -143,11 +220,18 @@ struct lnum {
 		while (res.a.size() > 1 && res.a.back() == 0)
 			res.a.pop_back();
 			
+		res.sign = (sign == b.sign);
+		
 		return res;		
 	}           
 	
-	lnum operator%(lnum b) {
+	lnum operator%(lnum b) { //always returns value in [0, b)
+		bool f = sign;
+		sign = 1;
+		
 		lnum curVal, cur;
+		curVal.sign = 1;
+		
 		for (int i = (int)a.size() - 1; i >= 0; i--) {
 			curVal.a.pb(0);
 			for (int j = (int)curVal.a.size() - 1; j > 0; j--)
@@ -161,33 +245,20 @@ struct lnum {
 				mid = (l + r) >> 1;
 				cur = b * lnum(mid);
 				
-				if (cur < curVal || cur == curVal)
+				if (cur <= curVal)
 					l = mid;
 				else
 					r = mid;
 			}
-			
+			      
 			curVal = curVal - b * lnum(l);  		
 		}
 		
+		if (!f)
+			curVal = b - curVal;
+		sign = f;
+			
+		assert(lnum(0) <= curVal && curVal < b);
 		return curVal;		
 	}
 };
-
-lnum gcd(lnum b1, lnum b2) { //STILL NOT TESTED! TRY TO FIND A TASK
-	if ((b1.a.size() == 1) && (b1.a[0] == 0))
-		return b2;
-	if ((b2.a.size() == 1) && (b2.a[0] == 0))
-		return b1;
-
-	if ((b1.a[0] % 2 == 0) && (b2.a[0] % 2 == 0))
-		return gcd(b1 / 2, b2 / 2) * lnum(2); 
-	if (b1.a[0] % 2 == 0)
-		return gcd(b1 / 2, b2);
-	if (b2.a[0] % 2 == 0)
-		return gcd(b1, b2 / 2);
-
-	if (b2 < b1)
-		return gcd(b1 - b2, b2);
-	return gcd(b2 - b1, b1);
-}

@@ -1,100 +1,100 @@
-const int MAXK = 18;
-const int MAXN = 1 << MAXK;				   
-
+//COMPLEX NUMBERS STRUCTURE (begin)
 struct comp {
 	ld x, y;
 	
-	comp() {};
-	comp(ld _x, ld _y): x(_x), y(_y) {};
-	comp(ld _x) {
+	comp(ld _x = 0, ld _y = 0) {
 		x = _x;
-		y = 0;
+		y = _y;	
 	}
 	
 	ld real() {
 		return x;	
-	}	
-	ld image() {
-		return y;	
 	}
 	
-	void operator+=(comp a) {
-		x += a.x;
-		y += a.y;	
-	}		
-	void operator/=(ld k) {
-		x /= k;
-		y /= k;	
+	comp operator+(comp a) {
+		return comp(x + a.x, y + a.y);	
+	}
+	
+	comp operator-(comp a) {
+		return comp(x - a.x, y - a.y);	
+	}
+	
+	comp operator*(comp a) {
+		return comp(x * a.x - y * a.y, x * a.y + y * a.x);	
+	}
+	
+	comp operator/(ld k) {
+		return comp(x / k, y / k);	
 	}
 };
 
-inline comp operator+(comp a, comp b) {
-	return comp(a.x + b.x, a.y + b.y);
+comp conj(comp a) {
+	return comp(a.x, -a.y);
 }
+//COMPLEX NUMBERS STRUCTURE (end)
 
-inline comp operator-(comp a, comp b) {
-	return comp(a.x - b.x, a.y - b.y);
-}
+const int MAXN = 250100;
 
-inline comp operator*(comp a, comp b) {
-	return comp(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
-}
+int res[4 * MAXN];
+comp a0[4 * MAXN], b0[4 * MAXN], c0[4 * MAXN];
+int MAXSZ, POWER;
 
-typedef vector<comp> polynom;
-
-int inv(int n) {
+int inv(int x) {
 	int res = 0;
-	forn(i, MAXK)
-		res |= ((n >> (MAXK - i - 1)) & 1) << i;
+	forn(i, POWER)
+		res += ((x >> i) & 1) << (POWER - 1 - i);
 	return res;
 }
 
-void fft(polynom &a, bool invert) {
-	int n = a.size();
-	if (n == 1)
-		return;
-		
-	forn(i, n)
-		if (i < inv(i))	
+void fft(comp *a, bool invert) {
+	forn(i, MAXSZ)
+		if (i < inv(i))
 			swap(a[i], a[inv(i)]);
 			
-	for (int len = 2; len <= n; len <<= 1) {
-		ld angle = pi * 2 / len * (invert ? -1 : 1);
-		comp w, wn(cos(angle), sin(angle));
-	
-		for (int i = 0; i < n; i += len) {
-			w = 1;
+	for (int len = 2; len <= MAXSZ; len <<= 1) {
+		ld angle = 2.0 * pi / len * (invert ? -1 : 1);
+		comp wn(cos(angle), sin(angle));
+		for (int i = 0; i < MAXSZ; i += len) {
+			comp w(1), u, v;
 			for (int j = 0; j < len / 2; j++) {
-				comp a0 = a[i + j], a1 = a[i + j + len / 2];
-				a[i + j] = a0 + w * a1;
-				a[i + j + len / 2] = a0 - w * a1;
-				
-				w = w * wn;
+				u = a[i + j];
+				v = a[i + j + len / 2];
+				a[i + j] = u + w * v;
+				a[i + j + len / 2] = u - w * v;
+				w = w * wn;	
 			}
-		}	
+		}
 	}
 	
 	if (invert)
-		forn(i, n)
-			a[i] /= n;
+		forn(i, MAXSZ)
+			a[i] = a[i] / MAXSZ;
 }
 
-vi multiply(vi a, vi b) {
-	polynom fa(a.size()), fb(b.size()), fc(a.size());
-	forn(i, a.size())
-		fa[i] = a[i];
-	forn(i, b.size())
-		fb[i] = b[i];
+void multiply(int *a, int asz, int *b, int bsz) {
+	POWER = 1;
+	while ((1 << POWER) < max(asz, bsz))
+		POWER++;
+	POWER++;
+	MAXSZ = 1 << POWER;
+
+	forn(i, MAXSZ) {
+		c0[i].x = a[i];
+		c0[i].y = b[i];
+	}
 	
-	fft(fa, 0);
-	fft(fb, 0);
-	forn(i, fc.size())
-		fc[i] = fa[i] * fb[i];
-	fft(fc, 1); 
+	fft(c0, 0);
+	c0[MAXSZ] = c0[0];
+	forn(i, MAXSZ) {
+		a0[i] = (c0[i] + conj(c0[MAXSZ - i])) / 2.0;
+		b0[i] = (c0[i] - conj(c0[MAXSZ - i])) * comp(0, -1.0) / 2.0;
+	}
 	
-	vi res(fc.size());
-	forn(i, fc.size())
-		res[i] = fc[i].real() + 0.5;		
+	forn(i, MAXSZ) 
+		a0[i] = a0[i] * b0[i];
 	
-	return res;
+	fft(a0, 1);
+
+	forn(i, MAXSZ)
+		res[i] = int(a0[i].real() + 0.5); //DOES NOT WORK FOR NEGATIVE INTS!
 }

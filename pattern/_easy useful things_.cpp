@@ -1,12 +1,12 @@
-File Association of *.cpp:
+///File Association for *.cpp:
 g++ !.cpp -o !.exe -O2 -DLOCAL -Wall -Wextra -Wl,--stack=268435456 -Dsome -std=c++11 -static-libstdc++ -D DEBUG
 
-Large Primes
+///Large Primes
 999999929
 999999797
 999999761
 
-//my set with blackjack
+///Set structure
 struct a
 {
         int key;
@@ -24,14 +24,14 @@ struct a
  
 set <a> q;
 
-//how to unique
+///How to unique
 int n = unique(a.begin(), a.end()) - a.begin();
 a.resize(n);    
 
-//enlarge your stack
+///Enlarge your stack
 #pragma comment(linker, "/STACK:16777216")
 
-//binomials
+///Binomial coefficients
 C[0][0] = 1;
 FORN(i, 1, n) {
     C[i][0] = 1;
@@ -39,7 +39,7 @@ FORN(i, 1, n) {
         C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
 }
 
-//digit sort
+///Digit sort
 int a[MAXN], b[MAXN], cnt[base];
 int n, *curr = &a[0], *prev = &b[0];
 int64 divby;

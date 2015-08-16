@@ -1,18 +1,19 @@
 int rt[MAXN], rk[MAXN];
 
-void make_set(int v) {
+void makeSets(int v) {
 	rt[v] = v;
+	rk[v] = 0;
 }
 
-int find_set(int v) {
+int findSet(int v) {
 	if (rt[v] != v)
-		rt[v] = find_set(rt[v]);
+		rt[v] = findSet(rt[v]);
 	return rt[v];
 }
 
-void union_set(int a, int b) {
-	int x = find_set(a);
-	int y = find_set(b);
+void unionSets(int a, int b) {
+	int x = findSet(a);
+	int y = findSet(b);
 	if (x != y) {
 		if (rk[x] > rk[y])
 			rt[y] = x;
