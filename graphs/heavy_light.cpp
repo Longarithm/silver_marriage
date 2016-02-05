@@ -135,4 +135,4 @@ ways = 0;
 wsz = 0;
 dfs2(0, 0);	
 
-int ans = max(getPath(a, lca(a, b)), getPath(b, lca(a, b)))
+int ans = max(getPath(a, lca(a, b)), getPath(b, lca(a, b)));

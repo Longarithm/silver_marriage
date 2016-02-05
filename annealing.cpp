@@ -9,16 +9,16 @@ void anneal(vector<int> s) {
 
     int i1, i2;  
     double temperature;
-    double startval, curval;
+    double startVal, curVal;
     double delta, merit, flip, index;
         
     temperature = 1.0;                          
     
-    curval = 0; //initialize
+    curVal = 0; //initialize
 
     for (int i = 0; i < COOLING_STEPS; i++) {
         temperature *= COOLING_FRACTION;
-        startval = curval; 
+        startVal = curVal; 
 
         for (int j = 0; j < STEPS_PER_TEMP; j++) {
             i1 = rand() % n;
@@ -26,22 +26,22 @@ void anneal(vector<int> s) {
             
             flip = (rand() % 1000000) * 1.0 / 999999.0;   
             delta = change(s, i1, i2);
-            index = (-delta / curval) / temperature;
+            index = (-delta / curVal) / temperature;
             merit = 1.0 / (1.0 + exp(index));
 
-            //minimizate energy
+            //minimize energy
             if (delta < 0) //good
-                curval += delta;
+                curVal += delta;
             else {
                 if (merit > flip) //not so good
-                    curval += delta;
+                    curVal += delta;
                 else //bad
-                    change(s, i1, i2); 
+                    change(s, i2, i1); 
             }                                                
 
         }
 
-        if (curval - startval < 0.0) //succeed
+        if (curVal - startVal < 0.0) //succeed
             temperature = temperature / COOLING_FRACTION;
     }
 }

@@ -1,49 +1,64 @@
-bool intersect_p(ld a, ld b, ld c, ld d) {
-	return max(a, b) >= min(c, d) && max(c, d) >= min(a, b);
+bool pointInRay(pt a, pt b, pt c) {
+	return line(b, c).lay(a) && ((c - b) * (a - b)) >= 0;
 }
 
-line segmentToLine(pt p1, pt p2) {
-	ld a = p1.y - p2.y, b = p2.x - p1.x;
-	return line(a, b, -(a * p1.x + b * p1.y));
+bool pointInSegment(pt a, pt b, pt c) {
+	pt bc = c - b, ba = a - b;
+	pt cb = b - c, ca = a - c;
+	return eq(bc % ba, 0) && (bc * ba >= 0) && (cb * ca >= 0);
 }
 
-bool intersect(pt a, pt b, pt c, pt d) {
-	ld v1 = (b - a) % (c - a); //sin(ab, ac)
-	ld v2 = (b - a) % (d - a); //sin(ab, ad)
-	ld v3 = (d - c) % (a - c); //sin(cd, ca)
-	ld v4 = (d - c) % (b - c); //sin(cd, cb)
-	if (eq(v1, 0) && eq(v2, 0) && eq(v3, 0) && eq(v4, 0)) //in the same line?
-		return intersect_p(a.x, b.x, c.x, d.x) && intersect_p(a.y, b.y, c.y, d.y); //proections
-	else
-		return (v1 * v2 <= 0) && (v3 * v4 <= 0);
+bool intersectB(ld a, ld b, ld c, ld d) {
+	return max(a, b) >= min(c, d) - eps && max(c, d) >= min(a, b) - eps;
 }
 
-bool parallel(line m, line n) {
-	return eq(m.a * n.b - m.b * n.a, 0);
+int sign(ld x) {
+	if (x >= eps)
+		return 1;
+	if (x <= -eps)
+		return -1;
+	return 0;	
 }
 
-bool equivalent(line m, line n) {
-	return parallel(m, n) && eq(m.a * n.c - m.c * n.a, 0) && eq(m.b * n.c - m.c * n.b, 0);
+bool segmentsIntersection(pt a, pt b, pt c, pt d) {
+	ld v[4];
+	int signV[4];
+		
+	v[0] = (b - a) % (c - a); //sin(ab, ac)
+	v[1] = (b - a) % (d - a); //sin(ab, ad)
+	v[2] = (d - c) % (a - c); //sin(cd, ca)
+	v[3] = (d - c) % (b - c); //sin(cd, cb)
+	
+	int zeroes = 0;
+	for (int i = 0; i < 4; i++) {
+		signV[i] = sign(v[i]);
+		zeroes += (signV[i] == 0);
+	}
+		
+	if (zeroes == 4) { //same line?
+		return intersectB(a.x, b.x, c.x, d.x) && intersectB(a.y, b.y, c.y, d.y); //projections
+	} 
+	return (signV[0] * signV[1] != 1) && (signV[2] * signV[3] != 1);	
 }
 
 int linesIntersection(line m, line n, pt &res) {
-	if (parallel(m, n)) {
-		if (equivalent(m, n))
+	if (m.parallel(n)) {
+		if (m.equivalent(n))
 			return 2;
 		else
 			return 0;
 	}		
-	ld sign = m.a * n.b - m.b * n.a;
-	res.x = (m.b * n.c - m.c * n.b) / sign;
-	res.y = (m.c * n.a - m.a * n.c) / sign;
+	ld sign = m.A * n.B - m.B * n.A;
+	res.x = (m.B * n.C - m.C * n.B) / sign;
+	res.y = (m.C * n.A - m.A * n.C) / sign;
 	return 1;
 }
 
 int segmentsIntersection(pt a, pt b, pt c, pt d, pt &p1, pt &p2) {
-	if (!intersect(a, b, c, d))
+	if (!segmentsIntersection(a, b, c, d))
 		return 0;
-	line l1 = segmentToLine(a, b), l2 = segmentToLine(c, d);
-	if (!equivalent(l1, l2)) {
+	line l1(a, b), l2(c, d);
+	if (!l1.equivalent(l2)) {
 		linesIntersection(l1, l2, p1);
 		return 1;
 	}
@@ -60,7 +75,7 @@ int segmentsIntersection(pt a, pt b, pt c, pt d, pt &p1, pt &p2) {
 }
 
 int arrowsIntersection(pt a, pt b, pt c, pt d, pt &res) {
-	line l1 = segmentToLine(a, b), l2 = segmentToLine(c, d);
+	line l1(a, b), l2(c, d);
 	switch(linesIntersection(l1, l2, res)) {
 		case 1: {
 			if (((b - a) * (res - a)) >= -eps && ((d - c) * (res - c)) >= -eps)

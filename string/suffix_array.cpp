@@ -1,55 +1,91 @@
+//SUFFIX ARRAY
+
 string s;
-int n, l, j, old_a[MAXN], new_a[MAXN], old_color[MAXN], new_color[MAXN];
-int cnt[MAXN], h[MAXN];
-int *a, *b, *clr_a, *clr_b;
+int n, curLen, classes;
+int cnt[MAXN], start[MAXN], p[MAXN], c[MAXN], oldP[MAXN], oldC[MAXN];
+
+int pos[MAXN], lcp[MAXN], curLCP;
 
 <...>
 
-	a = &old_a[0];
-	b = &new_a[0];
-	clr_a = &old_color[0];
-	clr_b = &new_color[0];
-	
 	cin >> s;
 	n = s.size();
-	forn(i, n)
-		a[i] = s[i];
+	
+	for (int i = 0; i < n; i++)
+		cnt[(int)s[i]]++;
+	
+	start[0] = 0;
+	for (int i = 1; i < MAXN; i++)
+		start[i] = start[i - 1] + cnt[i - 1];
+	
+	for (int i = 0; i < n; i++) 
+		p[start[(int)s[i]]++] = i;
 
-	forn(i, MAXN)
-		cnt[i] = 0;
-	forn(i, n) {
-		cnt[a[i]]++;
-		clr_a[i] = a[i];
+	c[p[0]] = 0;
+	classes = 1;
+	for (int i = 1; i < n; i++) {
+		if (s[p[i - 1]] != s[p[i]])
+			classes++;
+		c[p[i]] = classes - 1;	
 	}
-	h[0] = 0;
-	forab(i, 1, MAXN)
-		h[i] = h[i - 1] + cnt[i - 1];
-	forn(i, n) 
-		a[h[clr_a[i]]++] = i;
 
-	h[0] = 0;
-	forab(i, 1, MAXN)
-		h[i] = h[i - 1] + cnt[i - 1];
-
-	l = 1;
-	while (l < n) {
-		forn(i, n) {
-			j = (2 * n + a[i] - l) % n;
-			b[h[clr_a[j]]] = j;
-			h[clr_a[j]]++;
-		}
-		clr_b[b[0]] = 0;
-		h[0] = 0;
-		forab(i, 1, n) {
-			if (clr_a[b[i]] == clr_a[b[i - 1]] && clr_a[(b[i] + l) % n] == clr_a[(b[i - 1] + l) % n])
-				clr_b[b[i]] = clr_b[b[i - 1]];
-			else {
-				clr_b[b[i]] = clr_b[b[i - 1]] + 1;
-				h[clr_b[b[i]]] = i;
-			}
-		}
-
-		swap(a, b);
-		swap(clr_a, clr_b);
-		l <<= 1;
+	curLen = 1;
+	while (curLen < n) {
+	    swap(p, oldP);
+		for (int i = 0; i < n; i++)
+		   	oldP[i] = (oldP[i] - curLen + 2 * n) % n;
+	    forn(i, classes)
+	    	cnt[i] = 0;
+	    for (int i = 0; i < n; i++)
+	    	cnt[c[i]]++;	
+	    	
+	    start[0] = 0;
+	    for (int i = 1; i < classes; i++)	
+	    	start[i] = start[i - 1] + cnt[i - 1];
+	    	
+	    for (int i = 0; i < n; i++)
+	    	p[start[c[oldP[i]]]++] = oldP[i];
+	    	
+	    swap(c, oldC);
+	    classes = 1;
+	    c[p[0]] = 0;
+	    for (int i = 1; i < n; i++) {
+	    	if (oldC[p[i - 1]] != oldC[p[i]] || oldC[(p[i - 1] + curLen) % n] != oldC[(p[i] + curLen) % n])
+	    		classes++;
+	    	c[p[i]] = classes - 1;
+	    }
+	    
+	    curLen <<= 1;
 	}
+	
+//LCP
+//THIS PART IS NECESSARY FOR FINDING LCP OF CYCLIC SHIFTS!!!
+	int lf = 0;
+	forab(i, 1, n + 1)
+		if (i == n || c[p[i - 1]] != c[p[i]]) {
+			int rg = i;
+			sort(p + lf, p + rg);
+			reverse(p + lf, p + rg);			
+			lf = i;
+		}    
+//CASAI ALGORITHM		
+	for (int i = 0; i < n; i++)
+		pos[p[i]] = i;
+	
+	curLCP = 0;
+	for (int i = 0; i < n; i++) {
+		int j = pos[i];
+		if (curLCP > 0)
+			curLCP--;
+
+		if (j == n - 1) {
+			lcp[j] = -1;
+			curLCP = 0;
+		} else {
+			int k = p[j + 1];
+			while (curLCP < n && s[(i + curLCP) % n] == s[(k + curLCP) % n])
+				curLCP++;
+			lcp[j] = curLCP;
+		}		
+	}
+	

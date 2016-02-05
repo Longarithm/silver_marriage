@@ -2,7 +2,8 @@ int d[MAXN], par[MAXN], w[MAXN][MAXN];
 bool used[MAXN];
 
 void dijkstra(int x) {
-    forn(i, n) d[i] = INF / 2;
+    forn(i, n) 
+		d[i] = INF / 2;
     d[x] = 0;
     par[x] = 0;
 
