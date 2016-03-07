@@ -1,9 +1,9 @@
 pt o;
 bool cmp(pt a, pt b) {
-	ll x = (a - o) % (b - o);
-	if (x != 0)
-		return x > 0;
-	return len(a - o) < len(b - o);
+    ll x = (a - o) % (b - o);
+    if (x != 0)
+        return x > 0;
+    return (a - o).len() < (b - o).len();
 }
 
 vector<pt> convexHull(vector<pt> a) {

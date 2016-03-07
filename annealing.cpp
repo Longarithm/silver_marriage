@@ -3,9 +3,9 @@ double change(vector<int> s, int i1, int i2) {
 }
 
 void anneal(vector<int> s) {  
-    const int COOLING_STEPS = 1E5;
+    const int COOLING_STEPS = 10000;
     const int STEPS_PER_TEMP = 10;
-    const int COOLING_FRACTION = 0.98;
+    const double COOLING_FRACTION = 0.99;
 
     int i1, i2;  
     double temperature;
