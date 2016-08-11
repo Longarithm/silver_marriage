@@ -1,10 +1,10 @@
 struct node {
 	node *l, *r;
 	int key, pr, cnt;
-	node(int _key) {
+	node(int _key = 0, int _pr = rand()) {
 		l = r = NULL;
 		key = _key;
-		pr = rand();
+		pr = _pr;
 		cnt = 1;
 	}
 };
@@ -13,7 +13,7 @@ int cnt(node *v) {
 	return (v ? v->cnt : 0);
 }
 
-inline void upd_cnt(node *&v) {
+inline void update(node *&v) {
 	if (v) {
 		v->cnt = cnt(v->l) + 1 + cnt(v->r);
 	}
@@ -25,15 +25,15 @@ void split(node *v, int key, node *&l, node *&r) {
 		return;
 	}
 
-	int cur_key = cnt(v->l);
-	if (key <= cur_key) {
+	if (key <= cnt(v->l)) {
 		split(v->l, key, l, v->l);
 		r = v;
 	} else {
 		split(v->r, key - cnt(v->l) - 1, v->r, r);
 		l = v; 
 	}
-	upd_cnt(v);
+	
+	update(v);
 } 
 
 void merge(node *&v, node *l, node *r) {
@@ -48,7 +48,8 @@ void merge(node *&v, node *l, node *r) {
 		v = r;
 		merge(v->l, l, v->l);
 	}
-	upd_cnt(v);
+	
+	update(v);
 }
 
 void print(node *v) {
@@ -63,7 +64,7 @@ void print(node *v) {
 void insert(node *&p, int value, int pr, int key) {
 	node *p1, *p2;
 	split(p, key, p1, p2);
-	node *item = new node(value);
+	node *item = new node(value, pr);
 	merge(p, p1, item);
 	merge(p, p, p2);
 }
@@ -81,12 +82,14 @@ void erase(node *&p, int key) {
 		else
 			erase(p->r, key - cnt(p->l) - 1);
 	}
-	upd_cnt(p);
+	
+	update(p);
 }
 
 int find(node *p, int key) {
 	if (p == NULL)
 		return -1;
+		
 	int cur_key = cnt(p->l);
 	if (key == cur_key)
 		return p->key;

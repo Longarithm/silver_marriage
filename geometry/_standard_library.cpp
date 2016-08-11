@@ -54,12 +54,12 @@ struct pt {
 	}
 
 	pt norm() {
-		ld L = len();
-		if (L >= eps) {
-			x /= L;
-			y /= L;
-		}
-		return *this;
+		pt v = *this;
+		ld L = v.len();
+		assert(L >= eps);
+		v.x /= L;
+		v.y /= L;
+		return v;
 	}
 	
 	friend ld operator*(pt p1, pt p2) {
