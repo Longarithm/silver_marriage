@@ -7,7 +7,7 @@ pt circleByPoints(pt a, pt b, pt c) { //certainly, returns centre of circle
 	v2 = pt(-v2.y, v2.x);
 	
 	if (fabs(v1.x * v2.y - v1.y * v2.x) < eps)
-		return pt(-1, -1);
+		return a;
 		
 	ld t = (a2.x * v2.y - a2.y * v2.x - a1.x * v2.y + a1.y * v2.x) / (v1.x * v2.y - v1.y * v2.x);
 	pt res = a1 + v1 * t;

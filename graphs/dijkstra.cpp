@@ -1,3 +1,57 @@
+//O(m log n)
+
+struct edge {
+	int from, to, w;
+	
+	edge(int _from = 0, int _to = 0, int _w = 0) {
+		from = _from;
+		to = _to;
+		w = _w;
+	}
+};
+
+int n;
+ll d[MAXN];
+vector<int> g[MAXN];
+edge e[MAXM];
+
+struct comp {
+    bool operator () (int a, int b) {
+        if (d[a] != d[b])
+            return d[a] < d[b];
+        return a < b;
+    }
+};
+
+void dijkstra(int st) {
+    for (int i = 0; i < n; i++) {
+        d[i] = INF;
+    }
+    d[st] = 0;
+    
+    set<int, comp> s;
+    s.insert(st);
+    while (!s.empty()) {
+        int cur = *s.begin();
+        s.erase(s.begin());
+        
+        for (auto i : g[cur]) {
+            edge ed = e[i];
+            int to = ed.to;
+            if (to == cur)
+                to = ed.from;
+
+            if (d[to] > d[cur] + ed.w) {
+                s.erase(to);
+                d[to] = d[cur] + ed.w;
+                s.insert(to);
+            }
+        }
+    }
+}
+
+//O(n^2)
+
 int d[MAXN], par[MAXN], w[MAXN][MAXN];
 bool used[MAXN];
 
@@ -20,36 +74,5 @@ void dijkstra(int x) {
                 d[j] = d[cmin] + w[cmin][j];
                 par[j] = cmin;
             }
-    }
-}
-
-set<pair<int, int> > q;
-vector<pair<int, int> > g[MAXN];
-
-void dijkstra(int s, int f) {
-    pair<int, int> temp;
-    int a, b;
-
-    par[s] = s;
-    for (int i = 1; i <= n; i++) {
-        d[i] = (i != s) * INF;
-        q.insert(make_pair(d[i], i));
-    }
-
-    while (!q.empty()) {
-        temp = *q.begin();
-        if (temp.first == INF)
-            return;
-        q.erase(q.begin());
-        a = temp.second;
-        for (int i = 0; i < g[a].size(); i++) {
-            b = g[a][i].second;
-            if (d[b] > d[a] + g[a][i].first) {
-                q.erase(make_pair(d[b], b));
-                d[b] = d[a] + g[a][i].first;
-                q.insert(make_pair(d[b], b));
-                par[b] = a;
-            }
-        }
     }
 }

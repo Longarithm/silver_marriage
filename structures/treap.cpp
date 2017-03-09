@@ -84,14 +84,14 @@ void erase(node *&p, int key) {
 	upd_cnt(p);
 }
 
-int find(node *p, int key) {
+bool find(node *p, int key) {
 	if (p == NULL)
-		return -1;
+		return 0;
 	if (key < p->key)
 		return find(p->l, key);
 	else {
 		if (key == p->key)
-			return key;
+			return 1;
 		else
 			return find(p->r, key);
 	}
