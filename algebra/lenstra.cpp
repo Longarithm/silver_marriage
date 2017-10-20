@@ -1,7 +1,6 @@
-//Very special case of Lenstra's algorithm: elliptic curve y^2=x^3+ax-a
-//It tries to factorize "big" number N.
-//Life is too short for explanations...
-//Fata1ist, 2015
+// Very special case of Lenstra's algorithm: elliptic curve y^2=x^3+ax-a
+// It tries to factorize "big" number N.
+// Aleksandr Logunov, 2015
 
 #include <bits/stdc++.h>
 
